@@ -1,0 +1,67 @@
+spring:
+  application.name:
+    mall-backend
+  data:
+    redis:
+#      host: 172.18.199.32
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      connect-timeout: 5000ms
+      timeout: 5000ms
+      client-type: lettuce
+
+#  mvc:
+##    throw-exception-if-no-handler-found: true
+#    static-path-pattern: /static/**
+  datasource:
+#    url: jdbc:mysql://172.18.199.32:3306/mall_backend_sin?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/mybatis?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: Cs12356..
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+#    host: 172.18.199.32
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+#    username: host
+#    password: Cs12356..
+    virtual-host: /
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 1
+        retry:
+          max-attempts: 3
+          enabled: true
+          initial-interval: 1000ms
+          multiplier: 1
+          stateless: true
+    template:
+      retry:
+        enabled: true
+        max-attempts: 3
+        max-interval: 1000ms
+        multiplier: 1
+      mandatory: true
+
+#  web:
+#    resources:
+#      static-locations: classpath:/static/
+# mybatis config
+mybatis:
+  mapper-locations:
+    classpath:mapper/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+server:
+  port: 9003
+
+#debug: true
+
+
+

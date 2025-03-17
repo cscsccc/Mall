@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallUserMapper">
+
+    <sql id="Base_Column_List">
+        user_id, nick_name, login_name, password_md5,
+        introduce_sign, is_deleted, locked_flag, create_time
+    </sql>
+    <insert id="saveUser" parameterType="com.cs.pojo.MallUser">
+        insert into mall_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if  test="nickName != null">
+                nick_name,
+            </if>
+            <if  test="loginName != null">
+                login_name,
+            </if>
+            <if  test="passwordMd5 != null">
+                password_md5,
+            </if>
+            <if  test="introduceSign != null">
+                intorduce_sign,
+            </if>
+            <if  test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if  test="lockedFlag != null">
+                locked_flag,
+            </if>
+            <if  test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if  test="nickName != null">
+                #{nickName},
+            </if>
+            <if  test="loginName != null">
+                #{loginName},
+            </if>
+            <if  test="passwordMd5 != null">
+                #{passwordMd5},
+            </if>
+            <if  test="introduceSign != null">
+                #{intorduceSign},
+            </if>
+            <if  test="isDeleted != null">
+                #{isDeleted},
+            </if>
+            <if  test="lockedFlag != null">
+                #{lockedFlag},
+            </if>
+            <if  test="createTime != null">
+                #{createTime},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateLockedFlagByPrimaryKey">
+        update mall_user
+        <set>
+            <if test="lockedFlag != null">
+                locked_flag = #{lockedFlag},
+            </if>
+        </set>
+        where is_deleted = 0 and user_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="updateUserInfoByPrimaryKey">
+        update mall_user
+        <set>
+            <if test="nickName != null">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="loginName != null">
+                login_name = #{loginName,jdbcType=VARCHAR},
+            </if>
+            <if test="passwordMd5 != null">
+                password_md5 = #{passwordMd5,jdbcType=VARCHAR},
+            </if>
+            <if test="introduceSign != null">
+                introduce_sign = #{introduceSign,jdbcType=VARCHAR},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="lockedFlag != null">
+                locked_flag = #{lockedFlag,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+    <select id="selectList" parameterType="Map" resultType="com.cs.pojo.MallUser">
+        select <include refid="Base_Column_List" />
+        from mall_user
+        where is_deleted = 0
+        limit #{start}, #{limit}
+    </select>
+    <select id="getTotalList" resultType="java.lang.Integer">
+        select count(*)
+        from mall_user
+        where is_deleted = 0
+    </select>
+    <select id="selectByLoginName" resultType="com.cs.pojo.MallUser">
+        select <include refid="Base_Column_List" />
+        from mall_user
+        where login_name = #{loginName}
+    </select>
+    <select id="selectByLoginNameAndPassword" resultType="com.cs.pojo.MallUser">
+        select <include refid="Base_Column_List" />
+        from mall_user
+        <where>
+            <if test="loginName != null">
+                and login_name = #{loginName}
+            </if>
+            <if test="passwordMd5 != null">
+                and password_md5 = #{passwordMd5}
+            </if>
+            and locked_flag = 0
+            and is_deleted = 0
+        </where>
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.cs.pojo.MallUser">
+        select <include refid="Base_Column_List" />
+        from mall_user
+        where user_id = #{userId}
+    </select>
+
+
+</mapper>

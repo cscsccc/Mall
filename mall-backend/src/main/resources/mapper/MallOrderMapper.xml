@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallOrderMapper">
+    <sql id="Base_Column_List">
+        order_id, order_no, user_id, total_price, pay_status, pay_type,
+        pay_time, order_status, extra_info, is_deleted, create_time, update_time
+    </sql>
+    <insert id="insertSelective" parameterType="com.cs.pojo.MallOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into mall_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="orderNo != null">
+                order_no,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="totalPrice != null">
+                total_price,
+            </if>
+            <if test="payStatus != null">
+                pay_status,
+            </if>
+            <if test="payType != null">
+                pay_type,
+            </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="orderStatus != null">
+                order_status,
+            </if>
+            <if test="extraInfo != null">
+                extra_info,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="orderNo != null">
+                #{orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="totalPrice != null">
+                #{totalPrice,jdbcType=INTEGER},
+            </if>
+            <if test="payStatus != null">
+                #{payStatus,jdbcType=TINYINT},
+            </if>
+            <if test="payType != null">
+                #{payType,jdbcType=TINYINT},
+            </if>
+            <if test="payTime != null">
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderStatus != null">
+                #{orderStatus,jdbcType=TINYINT},
+            </if>
+            <if test="extraInfo != null">
+                #{extraInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="closeOrder">
+        update mall_order
+        set order_status = #{orderStatus},  update_time = now()
+        where order_id in
+        <foreach collection="orderIds" item="orderId" separator="," close=")" open="(">
+            #{orderId}
+        </foreach>
+    </update>
+
+    <update id="checkDone">
+        update mall_order
+        set order_status = 2, update_time = now()
+        where order_id in
+        <foreach collection="list" item="orderId" separator="," close=")" open="(">
+            #{orderId}
+        </foreach>
+    </update>
+    <update id="checkOut">
+        update mall_order
+        set order_status = 3, update_time = now()
+        where order_id in
+        <foreach collection="list" item="orderId" separator="," close=")" open="(">
+            #{orderId}
+        </foreach>
+    </update>
+    <update id="updateBySelective" parameterType="com.cs.pojo.MallOrder">
+        update mall_order
+        <set>
+            <if test="orderNo != null">
+                order_no = #{orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="totalPrice != null">
+                total_price = #{totalPrice,jdbcType=INTEGER},
+            </if>
+            <if test="payStatus != null">
+                pay_status = #{payStatus,jdbcType=TINYINT},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType,jdbcType=TINYINT},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus,jdbcType=TINYINT},
+            </if>
+            <if test="extraInfo != null">
+                extra_info = #{extraInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+    <resultMap id="BaseResultMap" type="com.cs.pojo.MallOrder">
+        <id column="order_id" jdbcType="BIGINT" property="orderId"/>
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="total_price" jdbcType="INTEGER" property="totalPrice"/>
+        <result column="pay_status" jdbcType="TINYINT" property="payStatus"/>
+        <result column="pay_type" jdbcType="TINYINT" property="payType"/>
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime"/>
+        <result column="order_status" jdbcType="TINYINT" property="orderStatus"/>
+        <result column="extra_info" jdbcType="VARCHAR" property="extraInfo"/>
+        <result column="is_deleted" jdbcType="TINYINT" property="isDeleted"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <select id="selectMallOrderPageList" parameterType="Map" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from mall_order
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+            and is_deleted = 0
+        </where>
+        limit #{start}, #{limit}
+    </select>
+    <select id="selectTotalMallOrder" resultType="java.lang.Integer">
+        select count(*)
+        from mall_order
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+            and is_deleted = 0
+        </where>
+    </select>
+    <select id="selectMallOrderByOrderId" resultType="com.cs.pojo.MallOrder">
+        select <include refid="Base_Column_List"  />
+        from mall_order
+        <where>
+            <if test="orderId != null">
+                order_id = #{orderId}
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKeys" resultType="com.cs.pojo.MallOrder">
+        select <include refid="Base_Column_List"/>
+        from mall_order
+        where order_id in
+        <foreach collection="list" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+    </select>
+    <select id="selectMallOrderByOrderNo" resultType="com.cs.pojo.MallOrder">
+        select <include refid="Base_Column_List"/>
+        from mall_order
+        where order_no = #{orderNo} and is_deleted = 0
+    </select>
+    <select id="getOrderListPage" parameterType="Map" resultType="com.cs.pojo.MallOrder">
+        select <include refid="Base_Column_List"/>
+        from mall_order
+        <where>
+            user_id = #{userId}
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+        </where>
+        order by order_id desc
+        limit #{start}, #{limit}
+    </select>
+    <select id="getTotalList" resultType="java.lang.Integer">
+        select count(*)
+        from mall_order
+        <where>
+            user_id = #{userId}
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+        </where>
+    </select>
+    <select id="selectMallOrderByOrderNoAnduserId" resultType="com.cs.pojo.MallOrder">
+        select <include refid="Base_Column_List"/>
+        from mall_order
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            and is_deleted = 0
+        </where>
+    </select>
+</mapper>

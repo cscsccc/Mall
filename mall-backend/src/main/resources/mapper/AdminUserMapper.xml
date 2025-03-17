@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.AdminUserMapper">
+    <!-- 更新用户密码   -->
+    <update id="updateByIdSelective" parameterType="com.cs.pojo.AdminUser">
+        UPDATE admin_user
+        <set>
+            <if test="loginUserName != null">
+                login_user_name = #{loginUserName},
+            </if>
+            <if test="loginPassword != null">
+                login_password = #{loginPassword},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName},
+            </if>
+            <if test="locked != null">
+                locked = #{locked}
+            </if>
+        </set>
+        WHERE admin_user_id = #{adminUserId}
+    </update>
+    <update id="updateNameByPrimaryKey">
+        update admin_user
+        <set>
+            <if test="loginUserName!=null">
+                login_user_name = #{loginUserName},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName},
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                admin_user_id = #{id}
+            </if>
+        </where>
+    </update>
+
+    <!-- SQL 语句 -->
+    <select id="login" resultType="com.cs.pojo.AdminUser">
+        SELECT admin_user_id, login_user_name, login_password, nick_name, locked
+        FROM admin_user
+        WHERE login_user_name = #{username} AND login_password = #{password} AND locked = 0
+    </select>
+    <select id="getDetailsById" resultType="com.cs.pojo.AdminUser">
+        SELECT admin_user_id, login_user_name, login_password, nick_name, locked
+        FROM admin_user
+        WHERE admin_user_id = #{id}
+    </select>
+    <select id="selectAdminUserByLoginUserName" resultType="com.cs.pojo.AdminUser">
+        select admin_user_id, login_user_name, login_password, nick_name, locked
+        FROM admin_user
+        <where>
+            <if test="loginUserName != null">
+                login_user_name = #{loginUserName}
+            </if>
+        </where>
+    </select>
+
+</mapper>

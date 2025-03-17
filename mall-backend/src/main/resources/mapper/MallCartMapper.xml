@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallCartMapper">
+    <sql id="Base_Column_List">
+        cart_item_id, user_id, goods_id, goods_count,
+        is_deleted, create_time, update_time
+    </sql>
+    <insert id="saveCart" parameterType="com.cs.pojo.MallCartItem">
+        insert into mall_shopping_cart_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cartItemId != null">
+                cart_item_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="goodsCount != null">
+                goods_count,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cartItemId != null">
+                #{cartItemId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId},
+            </if>
+            <if test="goodsCount != null">
+                #{goodsCount},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cs.pojo.MallCartItem">
+        update mall_shopping_cart_item
+        <set>
+            <if test="cartItemId!=null">
+                cart_item_id = #{cartItemId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId},
+            </if>
+            <if test="goodsCount != null">
+                goods_count = #{goodsCount},
+            </if>
+            <if test="isDeleted!=null">
+                is_deleted = #{isDeleted},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        <where>
+            <if test="cartItemId != null">
+                and cart_item_id = #{cartItemId}
+            </if>
+            and is_deleted = 0
+        </where>
+    </update>
+    <update id="deleteByPrimaryKey">
+        update mall_shopping_cart_item
+        set is_deleted = 1
+        where cart_item_id = #{cartItemId}
+    </update>
+    <update id="deleteBatchByPrimaryKey">
+        update mall_shopping_cart_item
+        set is_deleted = 1
+        where cart_item_id in
+        <foreach collection="itemIdList" item="cartItemId" open="(" separator="," close=")">
+            #{cartItemId}
+        </foreach>
+    </update>
+
+    <select id="selectByUserId" resultType="com.cs.pojo.MallCartItem">
+        select <include refid="Base_Column_List"/>
+        from mall_shopping_cart_item
+        where user_id = #{userId} and is_deleted = 0
+        limit #{number}
+    </select>
+    <select id="selectByUserIdAndGoodsId" resultType="com.cs.pojo.MallCartItem">
+        select <include refid="Base_Column_List"/>
+        from mall_shopping_cart_item
+        where goods_id = #{goodsId} and user_id = #{userId} and is_deleted = 0
+    </select>
+    <select id="selectCountByUserId" resultType="java.lang.Integer">
+        select count(*)
+        from mall_shopping_cart_item
+        where user_id = #{userId} and is_deleted = 0
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.cs.pojo.MallCartItem">
+        select <include refid="Base_Column_List"/>
+        from mall_shopping_cart_item
+        where cart_item_id = #{cartItemId} and is_deleted = 0
+    </select>
+    <select id="selectByPrimaryKeyForSettle" resultType="com.cs.pojo.MallCartItem">
+        select <include refid="Base_Column_List"/>
+        from mall_shopping_cart_item
+        where is_deleted = 0 and cart_item_id in
+        <foreach collection="cartItemIds" close=")" separator="," open="(" item="cartItemId">
+            #{cartItemId}
+        </foreach>
+    </select>
+    <select id="selectByUserIDAndCartItems" resultType="com.cs.pojo.MallCartItem">
+        select <include refid="Base_Column_List"/>
+        from mall_shopping_cart_item
+        where is_deleted = 0 and cart_item_id in
+        <foreach collection="cartItemIds" close=")" separator="," open="(" item="cartItemId">
+            #{cartItemId}
+        </foreach>
+        and user_id = #{userId}
+    </select>
+    <select id="selectByOrderId" resultType="com.cs.pojo.MallCartItem">
+        select <include refid="Base_Column_List"/>
+        from mall_shopping_cart_item
+        where is_deleted = 0 and order_id = #{orderId}
+    </select>
+</mapper>

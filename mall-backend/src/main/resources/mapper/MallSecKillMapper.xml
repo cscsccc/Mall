@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallSecKillMapper">
+
+    <resultMap id="BaseResultMap" type="com.cs.pojo.MallSeckill">
+        <id column="seckill_id" jdbcType="INTEGER" property="seckillId"/>
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
+        <result column="seckill_price" jdbcType="INTEGER" property="seckillPrice"/>
+        <result column="seckill_num" jdbcType="INTEGER" property="seckillNum"/>
+        <result column="seckill_status" jdbcType="BIT" property="seckillStatus"/>
+        <result column="seckill_begin" jdbcType="TIMESTAMP" property="seckillBegin"/>
+        <result column="seckill_end" jdbcType="TIMESTAMP" property="seckillEnd"/>
+        <result column="seckill_rank" jdbcType="INTEGER" property="seckillRank"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        seckill_id, goods_id, seckill_price, seckill_num, seckill_status, seckill_begin,
+        seckill_end, seckill_rank, create_time, update_time, is_deleted
+    </sql>
+    <insert id="saveSeckill">
+        insert into mall_seckill
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="seckillId != null">
+                seckill_id,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="seckillPrice != null">
+                seckill_price,
+            </if>
+            <if test="seckillNum != null">
+                seckill_num,
+            </if>
+            <if test="seckillStatus != null">
+                seckill_status,
+            </if>
+            <if test="seckillBegin != null">
+                seckill_begin,
+            </if>
+            <if test="seckillEnd != null">
+                seckill_end,
+            </if>
+            <if test="seckillRank != null">
+                seckill_rank,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="seckillId != null">
+                #{seckillId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="seckillPrice != null">
+                #{seckillPrice,jdbcType=INTEGER},
+            </if>
+            <if test="seckillNum != null">
+                #{seckillNum,jdbcType=INTEGER},
+            </if>
+            <if test="seckillStatus != null">
+                #{seckillStatus,jdbcType=BIT},
+            </if>
+            <if test="seckillBegin != null">
+                #{seckillBegin,jdbcType=TIMESTAMP},
+            </if>
+            <if test="seckillEnd != null">
+                #{seckillEnd,jdbcType=TIMESTAMP},
+            </if>
+            <if test="seckillRank != null">
+                #{seckillRank,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateSecKillBySelective" parameterType="com.cs.pojo.MallSeckill">
+        update mall_seckill
+        <set>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="seckillPrice != null">
+                seckill_price = #{seckillPrice,jdbcType=INTEGER},
+            </if>
+            <if test="seckillNum != null">
+                seckill_num = #{seckillNum,jdbcType=INTEGER},
+            </if>
+            <if test="seckillStatus != null">
+                seckill_status = #{seckillStatus,jdbcType=BIT},
+            </if>
+            <if test="seckillBegin != null">
+                seckill_begin = #{seckillBegin,jdbcType=TIMESTAMP},
+            </if>
+            <if test="seckillEnd != null">
+                seckill_end = #{seckillEnd,jdbcType=TIMESTAMP},
+            </if>
+            <if test="seckillRank != null">
+                seckill_rank = #{seckillRank,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+        </set>
+        where seckill_id = #{seckillId,jdbcType=BIGINT}
+    </update>
+    <update id="deleteSeckillByPrimaryKeys">
+        update mall_seckill
+        set is_deleted=1
+        where seckill_id in
+        <foreach collection="seckillIds" open="(" close=")" separator="," item="seckillId">
+            #{seckillId}
+        </foreach>
+    </update>
+
+    <select id="findSecKillList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from mall_seckill
+        where is_deleted = 0
+        order by seckill_begin asc
+<!--        <if test="goodsId != null and goodsId != ''">-->
+<!--            and goods_id = #{goodsId}-->
+<!--        </if>-->
+<!--        <if test="seckillStatus != null and seckillStatus != ''">-->
+<!--            and seckill_status = #{seckillStatus}-->
+<!--        </if>-->
+<!--        <if test="startTime != null and startTime != ''">-->
+<!--            and DATE_FORMAT(create_time,'%Y-%m-%d') <![CDATA[ >= ]]> DATE_FORMAT(#{startTime},'%Y-%m-%d')-->
+<!--        </if>-->
+<!--        <if test="endTime != null and endTime != ''">-->
+<!--            and DATE_FORMAT(create_time,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(#{endTime},'%Y-%m-%d')-->
+<!--        </if>-->
+    </select>
+    <select id="findSecKillListTotal" resultType="java.lang.Integer">
+        select count(*)
+        from mall_seckill
+        where is_deleted = 0
+    </select>
+    <select id="findSeckillByPrimaryKey" resultType="com.cs.pojo.MallSeckill">
+        select <include refid="Base_Column_List"/>
+        from mall_seckill
+        where seckill_id = #{seckillId}
+    </select>
+    <select id="findSecKillListForAdmin" parameterType="Map" resultType="com.cs.pojo.MallSeckill">
+        select <include refid="Base_Column_List"/>
+        from mall_seckill
+        where is_deleted = 0
+        limit #{start}, #{limit}
+    </select>
+    <select id="killByProcedure" statementType="CALLABLE">
+        call execute_seckill(
+            #{seckillId, jdbcType = BIGINT, mode = IN },
+            #{userId, jdbcType = BIGINT, mode = IN },
+            #{killTime, jdbcType = TIMESTAMP, mode = IN },
+            #{result, jdbcType = INTEGER, mode = OUT }
+            )
+    </select>
+    <select id="getPrimaryKryByGoodsId" resultType="java.lang.Long">
+        select seckill_id
+        from mall_seckill
+        where goods_id = #{goodsId} and is_deleted = 0
+    </select>
+    <select id="findSecKillByGoodsId" resultType="com.cs.pojo.MallSeckill">
+        select <include refid="Base_Column_List"/>
+        from mall_seckill
+        where is_deleted = 0 and goods_id = #{goodsId}
+    </select>
+</mapper>

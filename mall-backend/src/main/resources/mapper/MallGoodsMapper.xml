@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallGoodsMapper">
+    <sql id="Base_Column_List">
+        goods_id, goods_name, goods_intro,goods_category_id, goods_cover_img, goods_carousel, original_price,
+        selling_price, stock_num, tag, goods_sell_status, create_user, create_time, update_user,
+        update_time
+    </sql>
+    <sql id="Blob_Column_List">
+        goods_detail_content
+    </sql>
+
+
+    <resultMap id="BaseResultMap" type="com.cs.pojo.MallGoods">
+        <id column="goods_id" jdbcType="BIGINT" property="goodsId"/>
+        <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="goods_intro" jdbcType="VARCHAR" property="goodsIntro"/>
+        <result column="goods_category_id" jdbcType="BIGINT" property="goodsCategoryId"/>
+        <result column="goods_cover_img" jdbcType="VARCHAR" property="goodsCoverImg"/>
+        <result column="goods_carousel" jdbcType="VARCHAR" property="goodsCarousel"/>
+        <result column="original_price" jdbcType="INTEGER" property="originalPrice"/>
+        <result column="selling_price" jdbcType="INTEGER" property="sellingPrice"/>
+        <result column="stock_num" jdbcType="INTEGER" property="stockNum"/>
+        <result column="tag" jdbcType="VARCHAR" property="tag"/>
+        <result column="goods_sell_status" jdbcType="TINYINT" property="goodsSellStatus"/>
+        <result column="create_user" jdbcType="INTEGER" property="createUser"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_user" jdbcType="INTEGER" property="updateUser"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.cs.pojo.MallGoods">
+        <result column="goods_detail_content" jdbcType="LONGVARCHAR" property="goodsDetailContent"/>
+    </resultMap>
+
+    <select id="selectByIdAndName" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />,
+        <include refid="Blob_Column_List"/>
+        from mall_goods_info
+        where goods_name = #{goodsName,jdbcType=VARCHAR} and goods_category_id = #{goodsCategoryId,jdbcType=BIGINT}
+    </select>
+    <select id="findMallGoodsList" parameterType="Map"  resultType="com.cs.pojo.MallGoods">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_goods_info
+        <where>
+            <if test="goodsName != null and goodsName != ''">
+                and goods_name like CONCAT("%", #{goodsName}, "%")
+            </if>
+            <if test="goodsSellStatus != null and goodsSellStatus != ''">
+                and goods_sell_status = #{goodsSellStatus}
+            </if>
+            <if test="startTime != null and startTime.trim() != ''">
+                and create_time &gt; #{startTime}
+            </if>
+            <if test="endTime != null and endTime.trim() != ''">
+                and create_time &lt; #{endTime}
+            </if>
+        </where>
+        order by goods_id desc
+        <if test="start != null and limit!=null">
+            limit #{start}, #{limit}
+        </if>
+    </select>
+    <select id="getMallGoodsListTotal" parameterType="Map" resultType="java.lang.Integer">
+        select count(*)
+        from mall_goods_info
+        <where>
+            <if test="goodsName != null and goodsName != ''">
+                and goods_name like CONCAT("%", #{goodsName}, "%")
+            </if>
+            <if test="goodsSellStatus != null and goodsSellStatus != ''">
+                and goods_sell_status = #{goodsSellStatus}
+            </if>
+            <if test="startTime != null and startTime.trim() != ''">
+                and create_time &gt; #{startTime}
+            </if>
+            <if test="endTime != null and endTime.trim() != ''">
+                and create_time &lt; #{endTime}
+            </if>
+        </where>
+    </select>
+    <select id="getMallGoodById" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from mall_goods_info
+        where goods_id = #{id}
+    </select>
+    <select id="selectListByIds" resultType="com.cs.pojo.MallGoods">
+        select <include refid="Base_Column_List" />
+        from mall_goods_info
+        where goods_id in
+        <foreach collection="mallGoodsIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="searchMallGoods" parameterType="Map" resultType="com.cs.pojo.MallGoods">
+        select <include refid="Base_Column_List" />
+        from mall_goods_info
+        <where>
+            <if test="keyWord != null">
+                and goods_name like CONCAT('%', #{keyWord}, '%') or goods_intro like CONCAT('%', #{keyWord}, '%')
+            </if>
+            <if test="goodsCategoryId != null">
+                and goods_category_id = #{goodsCategoryId}
+            </if>
+            <if test="goodsSellStatus != null">
+                and goods_sell_status = #{goodsSellStatus}
+            </if>
+        </where>
+        <if test="orderBy != null and orderBy != ''">
+            <choose>
+                <when test="orderBy == 'new'">
+                    order by goods_id desc
+                </when>
+                <when test="orderBy == 'price'">
+                    order by selling_price asc
+                </when>
+                <otherwise>
+                    order by stock_num desc
+                </otherwise>
+            </choose>
+        </if>
+        <if test="start != null and limit != null">
+            limit #{start}, #{limit}
+        </if>
+    </select>
+    <select id="searchMallGoodsListTotal" resultType="java.lang.Integer">
+        select COUNT(*)
+        from mall_goods_info
+        <where>
+            <if test="keyWord != null">
+                and goods_name like CONCAT('%', #{keyWord}, '%') or goods_intro like CONCAT('%', #{keyWord}, '%')
+            </if>
+            <if test="goodsCategoryId != null">
+                and goods_category_id = #{goodsCategoryId}
+            </if>
+            <if test="goodsSellStatus != null">
+                and goods_sell_status = #{goodsSellStatus}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveGood" parameterType="com.cs.pojo.MallGoods">
+        insert into mall_goods_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="goodsName != null">
+                goods_name,
+            </if>
+            <if test="goodsIntro != null">
+                goods_intro,
+            </if>
+            <if test="goodsCategoryId != null">
+                goods_category_id,
+            </if>
+            <if test="goodsCoverImg != null">
+                goods_cover_img,
+            </if>
+            <if test="goodsCarousel != null">
+                goods_carousel,
+            </if>
+            <if test="originalPrice != null">
+                original_price,
+            </if>
+            <if test="sellingPrice != null">
+                selling_price,
+            </if>
+            <if test="stockNum != null">
+                stock_num,
+            </if>
+            <if test="tag != null">
+                tag,
+            </if>
+            <if test="goodsSellStatus != null">
+                goods_sell_status,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateUser != null">
+                update_user,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="goodsDetailContent != null">
+                goods_detail_content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsIntro != null">
+                #{goodsIntro,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsIntro != null">
+                #{goodsCategoryId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsCoverImg != null">
+                #{goodsCoverImg,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsCarousel != null">
+                #{goodsCarousel,jdbcType=VARCHAR},
+            </if>
+            <if test="originalPrice != null">
+                #{originalPrice,jdbcType=INTEGER},
+            </if>
+            <if test="sellingPrice != null">
+                #{sellingPrice,jdbcType=INTEGER},
+            </if>
+            <if test="stockNum != null">
+                #{stockNum,jdbcType=INTEGER},
+            </if>
+            <if test="tag != null">
+                #{tag,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsSellStatus != null">
+                #{goodsSellStatus,jdbcType=TINYINT},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                #{updateUser,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="goodsDetailContent != null">
+                #{goodsDetailContent,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBatchSellStatus">
+        update mall_goods_info
+        set goods_sell_status = #{sellStatus}
+        where goods_id in
+        <foreach item="id" collection="ids" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="updateMallGoods">
+        update mall_goods_info
+        <set>
+            <if test="goodsName != null">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsIntro != null">
+                goods_intro = #{goodsIntro,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsCategoryId != null">
+                goods_category_id = #{goodsCategoryId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsCoverImg != null">
+                goods_cover_img = #{goodsCoverImg,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsCarousel != null">
+                goods_carousel = #{goodsCarousel,jdbcType=VARCHAR},
+            </if>
+            <if test="originalPrice != null">
+                original_price = #{originalPrice,jdbcType=INTEGER},
+            </if>
+            <if test="sellingPrice != null">
+                selling_price = #{sellingPrice,jdbcType=INTEGER},
+            </if>
+            <if test="stockNum != null">
+                stock_num = #{stockNum,jdbcType=INTEGER},
+            </if>
+            <if test="tag != null">
+                tag = #{tag,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsSellStatus != null">
+                goods_sell_status = #{goodsSellStatus,jdbcType=TINYINT},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="goodsDetailContent != null">
+                goods_detail_content = #{goodsDetailContent,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where goods_id = #{goodsId}
+    </update>
+    <update id="recoverStockNum" parameterType="com.cs.pojo.StockNumDTO">
+            update  mall_goods_info
+            set stock_num = stock_num + #{goodsCount}
+            where goods_id = #{goodsId} and goods_sell_status = 0;
+    </update>
+    <update id="deductStockNum" parameterType="com.cs.pojo.StockNumDTO">
+            update  mall_goods_info
+            set stock_num = stock_num + #{goodsCount}
+            where goods_id = #{goodsId} and stock_num >= #{goodsCount} and goods_sell_status = 0;
+    </update>
+
+</mapper>

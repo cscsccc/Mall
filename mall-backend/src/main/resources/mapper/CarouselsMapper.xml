@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cs.mapper.CarouselsMapper">
+    <sql id="Base_Column_List">
+        carousel_id, carousel_url, redirect_url, carousel_rank, is_deleted,
+    create_time, create_user, update_time, update_user
+    </sql>
+    <insert id="insertCarousel" parameterType="com.cs.pojo.Carousels">
+        insert into mall_carousel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carouselId != null">
+                carousel_id,
+            </if>
+            <if test="carouselUrl != null">
+                carousel_url,
+            </if>
+            <if test="redirectUrl != null">
+                redirect_url,
+            </if>
+            <if test="carouselRank != null">
+                carousel_rank,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="updateUser != null">
+                update_user,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carouselId != null">
+                #{carouselId,jdbcType=INTEGER},
+            </if>
+            <if test="carouselUrl != null">
+                #{carouselUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="redirectUrl != null">
+                #{redirectUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="carouselRank != null">
+                #{carouselRank,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                #{updateUser,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByBatchId">
+        update mall_carousel
+        set is_deleted = 1, update_time = now()
+        where carousel_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectCarouselsList" parameterType="Map" resultType="com.cs.pojo.Carousels">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_carousel
+        <where>
+            is_deleted = 0
+        </where>
+        <if test="start != null and limit != null">
+            limit #{start}, #{limit}
+        </if>
+    </select>
+    <select id="getTotalCarousels" resultType="java.lang.Integer">
+        select count(*)
+        from mall_carousel
+    </select>
+    <select id="selectCarouselForIndex" resultType="com.cs.pojo.Carousels">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_carousel
+        <where>
+            is_deleted = 0
+        </where>
+        limit #{indexCarouselNumber}
+    </select>
+
+</mapper>

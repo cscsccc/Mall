@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallSeckillSuccessMapper">
+
+    <sql id="Base_Column_List">
+        sec_id, seckill_id, user_id, state, create_time
+    </sql>
+
+    <resultMap id="BaseResultMap" type="com.cs.pojo.MallSeckillSuccess">
+        <id column="sec_id" jdbcType="INTEGER" property="secId"/>
+        <result column="seckill_id" jdbcType="INTEGER" property="seckillId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="state" jdbcType="TINYINT" property="state"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+
+    <select id="findByUserIdAndSeckillId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_seckill_success
+        where seckill_id = #{seckillId} and user_id = #{userId}
+    </select>
+    <select id="findByUserIdAndSeckillSuccessId" resultType="com.cs.pojo.MallSeckillSuccess">
+        select
+        <include refid="Base_Column_List"/>
+        from mall_seckill_success
+        where sec_id = #{seckillSuccessId} and user_id = #{userId}
+    </select>
+</mapper>

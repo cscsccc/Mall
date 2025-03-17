@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.MallOrderItemMapper">
+
+    <sql id="Base_Column_List">
+        order_item_id, order_id, goods_id, goods_name, goods_cover_img,
+        selling_price, goods_count, create_time
+    </sql>
+    <insert id="insertBatch">
+        insert into mall_order_item
+        (order_id, goods_id,
+        goods_name, goods_cover_img, selling_price,
+        goods_count)
+        values
+        <foreach collection="mallOrderItems" item="orderItem" separator=",">
+            (#{orderItem.orderId,jdbcType=BIGINT}, #{orderItem.goodsId,jdbcType=BIGINT},
+            #{orderItem.goodsName,jdbcType=VARCHAR}, #{orderItem.goodsCoverImg,jdbcType=VARCHAR},
+            #{orderItem.sellingPrice,jdbcType=INTEGER},
+            #{orderItem.goodsCount,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <insert id="insertSelective">
+        insert into mall_order_item
+        (order_id, goods_id,
+        goods_name, goods_cover_img, selling_price,
+        goods_count)
+        values
+            (#{orderId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT},
+            #{goodsName,jdbcType=VARCHAR}, #{goodsCoverImg,jdbcType=VARCHAR},
+            #{sellingPrice,jdbcType=INTEGER},
+            #{goodsCount,jdbcType=INTEGER})
+    </insert>
+
+    <select id="selectItemsByOrderId" resultType="com.cs.pojo.MallOrderItem">
+        select <include refid="Base_Column_List" />
+        from mall_order_item
+        where order_id = #{orderId}
+    </select>
+    <select id="selectByOrderIds" resultType="com.cs.pojo.MallOrderItem">
+        select <include refid="Base_Column_List" />
+        from mall_order_item
+        where order_id in
+        <foreach collection="orderIds" item="orderId" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </select>
+
+</mapper>
